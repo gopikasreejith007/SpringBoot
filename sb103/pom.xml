@@ -31,8 +31,6 @@
 
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <sonar.organization>varshini2211</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
     </properties>
     <dependencies>
@@ -84,6 +82,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.2.1</version> <!-- Ensure this version matches your Spring Boot version -->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
