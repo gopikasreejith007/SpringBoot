@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.kgisl.sb103.controller.PersonController;
 import com.kgisl.sb103.entity.Person;
 import com.kgisl.sb103.service.PersonService;
 
