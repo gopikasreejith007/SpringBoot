@@ -1,4 +1,3 @@
-
 package com.kgisl.sb103;
  
     import org.springframework.boot.SpringApplication;

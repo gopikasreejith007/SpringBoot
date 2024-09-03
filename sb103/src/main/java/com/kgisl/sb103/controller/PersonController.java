@@ -1,50 +1,68 @@
-
+ 
 package com.kgisl.sb103.controller;
-
+ 
 import java.util.List;
-import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+ 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+ 
 import com.kgisl.sb103.entity.Person;
-import com.kgisl.sb103.repository.PersonRepository;
-
-
+import com.kgisl.sb103.service.PersonService;
+ 
+@RequestMapping("/person")
 @RestController
-@RequestMapping("/persons")  // Base path for all person-related endpoints
 public class PersonController {
-    @Autowired
-    private PersonRepository personRepository;
-
-    // GET all persons
+ 
+    private PersonService personService;
+ 
+    public PersonController(PersonService personService) {
+        this.personService = personService;
+    }
+ 
     @GetMapping
-    public List<Person> getAllPersons() {
-        return personRepository.findAll();
+    public ResponseEntity<List<Person>> getAllPersons() {
+        List<Person> persons = personService.getAllPersons();
+        return new ResponseEntity<>(persons, HttpStatus.OK);
     }
-
-    @GetMapping("/{id}")
-    public Person getPersonById(@PathVariable Long id) {
-        Optional<Person> person = personRepository.findById(id);
-        return person.orElseThrow(() -> new RuntimeException("Person not found"));
-    }
-
+ 
     @PostMapping
-    public Person createPerson(@RequestBody Person newPerson) {
-        return personRepository.save(newPerson);
+    public ResponseEntity<Person> createPerson(@RequestBody Person person) {
+        Person createdPerson = personService.createPerson(person);
+        return new ResponseEntity<>(createdPerson, HttpStatus.CREATED);
     }
-    
-    
+ 
+    @GetMapping("/{id}")
+    public ResponseEntity<Person> getPersonById(@PathVariable int id) {
+        Person person = personService.getPersonById(id);
+        if (id <= 0) {
+            throw new IllegalArgumentException("ID must be a positive integer.");
+        }
+        return new ResponseEntity<>(person, person != null ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+ 
     @PutMapping("/{id}")
-    public Person updatePerson(@PathVariable Long id, @RequestBody Person updatedPerson) {
-        return personRepository.findById(id)
-                .map(person -> {
-                    // Update the fields as necessary
-                    return personRepository.save(new Person(id, updatedPerson.p_name(), updatedPerson.p_email()));
-                })
-                .orElseThrow(() -> new RuntimeException("Person not found"));
+    public ResponseEntity<Person> updatePerson(@PathVariable int id, @RequestBody Person updatedPerson) {
+        Person person = personService.updatePerson(id, updatedPerson);
+        if (person == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(person, HttpStatus.OK);
     }
-
+ 
     @DeleteMapping("/{id}")
-    public void deletePerson(@PathVariable Long id) {
-        personRepository.deleteById(id);
+    public ResponseEntity<Void> deletePerson(@PathVariable("id") int id) {
+        if (personService.getPersonById(id) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        personService.deletePerson(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
